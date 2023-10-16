@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Budget</title>
+    <meta name="description" content="A free personal budger app">
+    <meta name="keywords" content="app free budget finance">
+    <link rel="stylesheet" href="reset.css">
+    <link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+
+    <a href="#main" class="skip">Skip to content</a>
+    <nav role="navigation" aria-label="Navigation Tab"></nav>
+    <nav>
+        <ul>
+            <li><a href="spent.html">Your Spend</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="login.html">Sign In</a></li>
+            <li><a href="https://google.com">Google</a></li>
+        </ul>
+    </nav>
+    <!-- <a href="main" class="skip">Skip to Main Content</a> -->
+    <div class="hero">
+        <h1>Personal Budget </h1>
+        <h2> A personal-budget management app </h2>
+    </div>
+
+    <main class="center" id="main">
+
+        <div class="page-area">
+
+            <article>
+                <h1>Stay on track</h1>
+                <p>
+                    Ever wondered where your money goes? It's easy to lose track, but effective budget management relies
+                    on real data. Our app is here to assist you in gaining clarity about your spending habits!
+                </p>
+            </article>
+
+            <article>
+                <h1>Alerts</h1>
+                <p>
+                    "Imagine running out of your clothing budget unexpectedly. With our app, you'll receive timely
+                    alerts to ensure you never exceed your budgetary limits." </p>
+            </article>
+
+            <article>
+                <h1>Results</h1>
+                <p>
+                    Individuals who diligently follow a financial plan, carefully tracking their expenses, find
+                    themselves on a faster path to financial freedom. Moreover, they enjoy a more content and worry-free
+                    life, spending without anxiety or guilt, knowing their finances are well-managed and secure.
+                </p>
+            </article>
+
+            <article>
+                <h1>Free</h1>
+                <p>
+                    This application is entirely cost-free! Plus, you have full control over your data, ensuring your
+                    privacy and security. </p>
+            </article>
+
+
+
+            <article>
+
+            </article>
+
+
+
+            <article>
+                <h1>Chart</h1>
+                <p>
+                    <canvas id="myChart" width="20" height="20"></canvas>
+                    <li><a href="chart.html">"Click here to view the budget chart "</a></li>
+                </p>
+
+            </article>
+
+        </div>
+
+    </main>
+
+    <!-- <footer class="bottom">
+        <div class="center">
+            
+            
+            
+        </div>
+    </footer> -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.min.js"
+        integrity="sha512-quHCp3WbBNkwLfYUMd+KwBAgpVukJu5MncuQaWXgCrfgcxCJAq/fo+oqrRKOj+UKEmyMCG3tb8RB63W+EmrOBg=="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"
+        integrity="sha512-s+xg36jbIujB2S2VKfpGmlC3T5V2TF3lY48DX7u2r9XzGzgPsa6wTpOQA7J9iffvdeBN0q9tKzRxVxw1JviZPg=="
+        crossorigin="anonymous"></script>
+
+    <script>
+        var dataSource = {
+            datasets: [
+                {
+                    data: [],
+                    backgroundColor: [
+                        '#ffcd56',
+                        '#ff6384',
+                        '#36a2eb',
+                        '#fd6b19',
+                    ]
+                }
+            ],
+            labels: []
+        };
+
+        function createChart() {
+            var ctx = document.getElementById('myChart').getContext('2d');
+            var myPieChart = new Chart(ctx, {
+                type: 'pie',
+                data: dataSource
+            });
+
+        }
+
+        function getBudget() {
+            axios.get('http://localhost:3000/budget')
+                .then(function (res) {
+                    for (var i = 0; i < res.data.myBudget.length; i++) {
+                        dataSource.datasets[0].data[i] = res.data.myBudget[i].budget;
+                        dataSource.labels[i] = res.data.myBudget[i].title;
+                        createChart();
+                    }
+                });
+        }
+
+        getBudget();
+
+    </script>
+
+
+</body>
+
+</html>
+<style>
+    body {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        width: 960px;
+        height: 500px;
+        position: relative;
+    }
+
+    svg {
+        width: 100%;
+        height: 100%;
+    }
+
+    path.slice {
+        stroke-width: 2px;
+    }
+
+    polyline {
+        opacity: .3;
+        stroke: black;
+        stroke-width: 2px;
+        fill: none;
+    }
+</style>
+
+<body>
+    <button class="randomize">randomize</button>
+
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script>
+
+        var svg = d3.select("body")
+            .append("svg")
+            .append("g")
+
+        svg.append("g")
+            .attr("class", "slices");
+        svg.append("g")
+            .attr("class", "labels");
+        svg.append("g")
+            .attr("class", "lines");
+
+        var width = 960,
+            height = 450,
+            radius = Math.min(width, height) / 2;
+
+        var pie = d3.layout.pie()
+            .sort(null)
+            .value(function (d) {
+                return d.value;
+            });
+
+        var arc = d3.svg.arc()
+            .outerRadius(radius * 0.8)
+            .innerRadius(radius * 0.4);
+
+        var outerArc = d3.svg.arc()
+            .innerRadius(radius * 0.9)
+            .outerRadius(radius * 0.9);
+
+        svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+        var key = function (d) { return d.data.label; };
+
+        var color = d3.scale.ordinal()
+            .domain(["Eat out", "Rent", "Grocery", "Transportation", "Entertainment", "Utilities", "Insurance"])
+            .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+
+        function randomData() {
+            var labels = color.domain();
+            return labels.map(function (label) {
+                return { label: label, value: Math.random() }
+            });
+        }
+
+        change(randomData());
+
+        d3.select(".randomize")
+            .on("click", function () {
+                change(randomData());
+            });
+
+
+        function change(data) {
+
+            /* ------- PIE SLICES -------*/
+            var slice = svg.select(".slices").selectAll("path.slice")
+                .data(pie(data), key);
+
+            slice.enter()
+                .insert("path")
+                .style("fill", function (d) { return color(d.data.label); })
+                .attr("class", "slice");
+
+            slice
+                .transition().duration(1000)
+                .attrTween("d", function (d) {
+                    this._current = this._current || d;
+                    var interpolate = d3.interpolate(this._current, d);
+                    this._current = interpolate(0);
+                    return function (t) {
+                        return arc(interpolate(t));
+                    };
+                })
+
+            slice.exit()
+                .remove();
+
+            /* ------- TEXT LABELS -------*/
+
+            var text = svg.select(".labels").selectAll("text")
+                .data(pie(data), key);
+
+            text.enter()
+                .append("text")
+                .attr("dy", ".35em")
+                .text(function (d) {
+                    return d.data.label;
+                });
+
+            function midAngle(d) {
+                return d.startAngle + (d.endAngle - d.startAngle) / 2;
+            }
+
+            text.transition().duration(1000)
+                .attrTween("transform", function (d) {
+                    this._current = this._current || d;
+                    var interpolate = d3.interpolate(this._current, d);
+                    this._current = interpolate(0);
+                    return function (t) {
+                        var d2 = interpolate(t);
+                        var pos = outerArc.centroid(d2);
+                        pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
+                        return "translate(" + pos + ")";
+                    };
+                })
+                .styleTween("text-anchor", function (d) {
+                    this._current = this._current || d;
+                    var interpolate = d3.interpolate(this._current, d);
+                    this._current = interpolate(0);
+                    return function (t) {
+                        var d2 = interpolate(t);
+                        return midAngle(d2) < Math.PI ? "start" : "end";
+                    };
+                });
+
+            text.exit()
+                .remove();
+
+            /* ------- SLICE TO TEXT POLYLINES -------*/
+
+            var polyline = svg.select(".lines").selectAll("polyline")
+                .data(pie(data), key);
+
+            polyline.enter()
+                .append("polyline");
+
+            polyline.transition().duration(1000)
+                .attrTween("points", function (d) {
+                    this._current = this._current || d;
+                    var interpolate = d3.interpolate(this._current, d);
+                    this._current = interpolate(0);
+                    return function (t) {
+                        var d2 = interpolate(t);
+                        var pos = outerArc.centroid(d2);
+                        pos[0] = radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
+                        return [arc.centroid(d2), outerArc.centroid(d2), pos];
+                    };
+                });
+
+            polyline.exit()
+                .remove();
+        };
+
+    </script>
+    <footer class="bottom">
+        <div class="center">
+
+
+
+        </div>
+    </footer>
+</body>
