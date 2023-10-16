@@ -76,7 +76,7 @@
                 <h1>Chart</h1>
                 <p>
                     <canvas id="myChart" width="20" height="20"></canvas>
-                    <li><a href="chart.html">"Click here to view the budget chart "</a></li>
+                    <li><a href="chart.html"></a></li>
                 </p>
 
             </article>
@@ -174,7 +174,15 @@
 
     <script src="http://d3js.org/d3.v3.min.js"></script>
     <script>
-
+        axios.get('http://localhost:3000/budget')
+        .then(function (res) {
+            res=res.data["myBudget"];
+            //get data
+            const title=res.map(d=>d.title)
+            const budget=res.map(d=>d.budget)
+            const colors=res.map(d=>d.color)
+            
+            console.log(title , budget,colors)
         var svg = d3.select("body")
             .append("svg")
             .append("g")
@@ -207,6 +215,9 @@
         svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
         var key = function (d) { return d.data.label; };
+        var color = d3.scale.ordinal()
+            .domain(title)
+            .range(colors);
 
         var color = d3.scale.ordinal()
             .domain(["Eat out", "Rent", "Grocery", "Transportation", "Entertainment", "Utilities", "Insurance"])
@@ -219,8 +230,13 @@
             });
         }
 
-        change(randomData());
-
+        // change(randomData());
+        change(
+            res.map(d=>{
+                return {label:d.title,value:d.budget}
+            })
+        )
+        
         d3.select(".randomize")
             .on("click", function () {
                 change(randomData());
@@ -317,6 +333,7 @@
             polyline.exit()
                 .remove();
         };
+    })
 
     </script>
     <footer class="bottom">
